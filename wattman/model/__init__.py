@@ -3,7 +3,7 @@ import sqlalchemy as sa
 from sqlalchemy import orm, schema, types, func
 from sqlalchemy.orm import column_property
 from sqlalchemy.sql import and_, select
-from wurdig.model import meta
+from wattman.model import meta
 #all elixer stuff below - might change - using bel-epa.com guide
 import elixir
 

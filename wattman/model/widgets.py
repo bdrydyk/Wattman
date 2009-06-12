@@ -112,10 +112,10 @@ class AkismetSpamCheck(FancyValidator):
         if request.urlvars['action'] == 'save':
             return values
         
-        if h.wurdig_use_akismet():
-            from wurdig.lib.akismet import Akismet
+        if h.wattman_use_akismet():
+            from wattman.lib.akismet import Akismet
             # Thanks for the help from http://soyrex.com/blog/akismet-django-stop-comment-spam/
-            a = Akismet(h.wurdig_get_akismet_key(), wurdig_url=request.server_name)
+            a = Akismet(h.wattman_get_akismet_key(), wattman_url=request.server_name)
             akismet_data = {}
             akismet_data['user_ip'] = request.remote_addr
             akismet_data['user_agent'] = request.user_agent
@@ -135,7 +135,7 @@ class PrimitiveSpamCheck(FancyValidator):
     def _to_python(self, value, state):        
         # Ensure we have a valid string
         value = UnicodeString(max=10).to_python(value, state)
-        eq = h.wurdig_spamword().lower() == value.lower()
+        eq = h.wattman_spamword().lower() == value.lower()
         if not eq:
             raise Invalid("Double check your answer to the spam prevention question and resubmit.", value, state)
         return value
@@ -230,10 +230,10 @@ class NewCommentForm(Schema):
         messages={'empty':'Please enter a comment.'})
     approved = StringBool(if_missing=False)
     if not h.auth.authorized(h.auth.is_valid_user):
-        if h.wurdig_use_akismet():
+        if h.wattman_use_akismet():
             chained_validators = [AkismetSpamCheck()]
         else:
-            wurdig_comment_question = PrimitiveSpamCheck(not_empty=True, max=10, strip=True)
+            wattman_comment_question = PrimitiveSpamCheck(not_empty=True, max=10, strip=True)
             
 comment_form = twf.TableForm('page_form', action='save', validator = NewCommentForm, children=[
     twf.HiddenField('id'),
