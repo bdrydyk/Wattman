@@ -1,0 +1,3 @@
+include wattman/config/deployment.ini_tmpl
+recursive-include wattman/public *
+recursive-include wattman/templates *
