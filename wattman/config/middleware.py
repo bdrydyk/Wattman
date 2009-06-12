@@ -11,6 +11,9 @@ from routes.middleware import RoutesMiddleware
 
 from wattman.config.environment import load_environment
 
+from authkit import authenticate
+from tw import api as twa
+
 def make_app(global_conf, full_stack=True, static_files=True, **app_conf):
     """Create a Pylons WSGI application and return it
 
@@ -46,17 +49,25 @@ def make_app(global_conf, full_stack=True, static_files=True, **app_conf):
     app = CacheMiddleware(app, config)
 
     # CUSTOM MIDDLEWARE HERE (filtered by error handling middlewares)
-
+    app = twa.make_middleware(app, {
+        'toscawidgets.framework': 'pylons',
+        'toscawidgets.framework.default_view': 'mako',
+        'toscawidgets.middleware.inject_resources' : True,
+        
+    })
+    
+    
     if asbool(full_stack):
         # Handle Python exceptions
         app = ErrorHandler(app, global_conf, **config['pylons.errorware'])
 
+        app = authkit.authenticate.middleware(app, app_conf)
         # Display error documents for 401, 403, 404 status codes (and
         # 500 when debug is disabled)
         if asbool(config['debug']):
             app = StatusCodeRedirect(app)
         else:
-            app = StatusCodeRedirect(app, [400, 401, 403, 404, 500])
+            app = StatusCodeRedirect(app, [401, 403, 404, 500])
 
     # Establish the Registry for this application
     app = RegistryManager(app)

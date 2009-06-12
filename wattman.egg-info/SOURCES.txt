@@ -24,6 +24,9 @@ wattman/lib/app_globals.py
 wattman/lib/base.py
 wattman/lib/helpers.py
 wattman/model/__init__.py
+wattman/model/entities.py
+wattman/model/meta.py
+wattman/model/widgets.py
 wattman/public/bg.png
 wattman/public/favicon.ico
 wattman/public/index.html

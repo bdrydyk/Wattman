@@ -9,6 +9,11 @@ import wattman.lib.app_globals as app_globals
 import wattman.lib.helpers
 from wattman.config.routing import make_map
 
+from sqlalchemy import engine_from_config
+from wattman.model import init_model
+import wattman.model as model
+import elixir as elixir
+
 def load_environment(global_conf, app_conf):
     """Configure the Pylons environment via the ``pylons.config``
     object
@@ -37,3 +42,16 @@ def load_environment(global_conf, app_conf):
 
     # CONFIGURATION OPTIONS HERE (note: all config options will override
     # any Pylons config options)
+    # Setup Elixir
+
+    engine = engine_from_config(config, 'sqlalchemy.')
+    if model.elixir.options_defaults.get('autoload'):
+        # Reflected tables
+        model.elixir.bind = engine
+        model.metadata.bind = engine
+        model.elixir.setup_all()
+    else:
+        # Non-reflected tables
+        model.init_model(engine)
+
+
